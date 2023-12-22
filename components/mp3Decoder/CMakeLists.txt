@@ -1,0 +1,12 @@
+if(CONFIG_MP3DECODER_USE_LIBMAD)
+
+set(CPPFLAGS -DHAVE_CONFIG_H)
+
+set(COMPONENT_SRCDIRS mad)
+set(COMPONENT_ADD_INCLUDEDIRS mad)
+
+set(COMPONENT_REQUIRES main)
+
+endif()
+
+register_component()

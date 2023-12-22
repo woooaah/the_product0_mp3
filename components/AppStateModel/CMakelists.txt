@@ -1,0 +1,9 @@
+idf_component_register(
+    SRCS "appModel.c"
+    INCLUDE_DIRS "."
+    REQUIRES storage audio mediaInterface)
+#ESP-IDF 在搜索所有待构建的组件时，会按照 COMPONENT_DIRS 指定的顺序依次进行，这意味着在默认
+#情况下，首先搜索 ESP-IDF 内部组件（IDF_PATH/components），然后是 EXTRA_COMPONENT_DIRS
+#中的组件，最后是项目组件（PROJECT_DIR/components）。如果这些目录中的两个或者多个包含具有
+#相同名字的组件，则使用搜索到的最后一个位置的组件。这就允许将组件复制到项目目录中再修改以覆
+#盖 ESP-IDF 组件，如果使用这种方式，ESP-IDF 目录本身可以保持不变。
