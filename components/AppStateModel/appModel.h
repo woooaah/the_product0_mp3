@@ -1,7 +1,7 @@
 
 #ifndef APPMODEL_H_
 #define APPMODEL_H_
-#include "audioStream.h"
+#include "mp3d.h"
 
 void hardware_init(void);
 

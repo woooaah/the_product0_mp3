@@ -1,0 +1,15 @@
+set(CPPFLAGS -DHAVE_CONFIG_H)
+set(DECODER_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR})
+file(GLOB_RECURSE MINIMP3_SOURCES ${DECODER_ROOT_DIR}/minimp3/*.c)
+file(GLOB_RECURSE MAD_SOURCES ${DECODER_ROOT_DIR}/mad/*.c)
+
+idf_component_register(
+    SRCS
+    mp3d.c
+    ${MINIMP3_SOURCES}
+    INCLUDE_DIRS
+    ${DECODER_ROOT_DIR}/minimp3
+    .
+    REQUIRES
+    main
+    bt)

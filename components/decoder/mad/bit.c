@@ -138,6 +138,9 @@ unsigned long mad_bit_read(struct mad_bitptr *bitptr, unsigned int len)
 {
   register unsigned long value;
 
+  if (len == 0)
+    return 0;
+
   if (bitptr->left == CHAR_BIT)
     bitptr->cache = *bitptr->byte;
 
@@ -211,12 +214,8 @@ unsigned short mad_bit_crc(struct mad_bitptr bitptr, unsigned int len,
   }
 
   switch (len / 8) {
-  case 3: crc = (crc << 8) ^
-	    crc_table[((crc >> 8) ^ mad_bit_read(&bitptr, 8)) & 0xff];
-	    /* fall through */
-  case 2: crc = (crc << 8) ^
-	    crc_table[((crc >> 8) ^ mad_bit_read(&bitptr, 8)) & 0xff];
-	    /* fall through */
+  case 3: 
+  case 2: 
   case 1: crc = (crc << 8) ^
 	    crc_table[((crc >> 8) ^ mad_bit_read(&bitptr, 8)) & 0xff];
 

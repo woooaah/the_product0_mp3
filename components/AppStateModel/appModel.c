@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "appModel.h"
 #include "fileSystem.h"
-#include "audioStream.h"
+#include "mp3d.h"
 #include "BluetoothClassic/btClassic.h"
 
 void hardware_init(void)

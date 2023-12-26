@@ -26,7 +26,10 @@
 
 #include "esp_system.h"
 #include "esp_log.h"
+#include "esp_timer.h"
 
+#include "mp3d.h"
+#include "aud_app_core.h"
 /* log tags */
 #define BT_AV_TAG             "BT_AV"
 #define BT_RC_CT_TAG          "RC_CT"
@@ -113,8 +116,7 @@ static int s_connecting_intv = 0;                             /* count of heart 
 static uint32_t s_pkt_cnt = 0;                                /* count of packets */
 static esp_avrc_rn_evt_cap_mask_t s_avrc_peer_rn_cap;         /* AVRC target notification event capability bit mask */
 static TimerHandle_t s_tmr;                                   /* handle of heart beat timer */
-static TaskHandle_t s_aud_app_task_handle = NULL;
-
+static mp3AudioStream_t* g_mp3_stream_ptr;
 /*********************************
  * STATIC FUNCTION DEFINITIONS
  ********************************/
@@ -357,8 +359,9 @@ static int32_t bt_app_a2d_data_cb(uint8_t *data, int32_t len)
     if (data == NULL || len < 0) {
         return 0;
     }
-    audio_loop();
-    return audio_streamOut(data,len);
+    int res = mp3dToA2dpDatacb(g_mp3_stream_ptr->ps,data,len);
+    audio_a2dpSourceLoadTask(g_mp3_stream_ptr);
+    return res;
 }
 
 static void bt_app_a2d_heart_beat(TimerHandle_t arg)
@@ -719,11 +722,6 @@ static void bt_av_hdl_avrc_ct_evt(uint16_t event, void *p_param)
     }
     }
 }
-static void runtime_loopTask(void* arg)
-{
-    audio_loop();
-}
-
 void app_main(void)
 {
     // printf("Hello world!\n");
@@ -756,15 +754,17 @@ void app_main(void)
     /********************************* code line *********************************/
     // printf("你好");
     hardware_init();
-    audio_init();
-    fileSystem_listLoad(10);
-    fileSystem_listShow();
-    // test 
+    // fileSystem_listLoad(10);
+    // fileSystem_listShow();
+    g_mp3_stream_ptr = createMp3audioStream("/sdcard/恶口-杰子.mp3");
+    audio_prepare(g_mp3_stream_ptr);
+
+    printf("free heap size %"PRIu32" bytes.\n ",esp_get_free_heap_size());
+
+    // aud_app_task_start_up();
+    printf("free heap size %"PRIu32" bytes.\n ",esp_get_free_heap_size());
     bt_app_task_start_up();
-
-    // xTaskCreate(runtime_loopTask, "audioTask", 1024 * 1024, NULL, 5, &s_aud_app_task_handle);
-
+    printf("free heap size %"PRIu32" bytes.\n ",esp_get_free_heap_size());
     bt_app_work_dispatch(bt_av_hdl_stack_evt, BT_APP_STACK_UP_EVT, NULL, 0, NULL);
-
-    audio_reload("/sdcard/恶口-杰子.mp3");
+    // aud_loop();
 }
